@@ -6,4 +6,6 @@
  * https://marton.lederer.hu
  */
 
-export { fromUint8Array } from 'https://deno.land/x/base64@v0.2.0/mod.ts'
+// export { fromUint8Array } from "https://deno.land/x/base64@v0.2.0/mod.ts";
+
+export { bytesToBase64 as fromUint8Array } from "./lib/base64.ts";

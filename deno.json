@@ -1,0 +1,5 @@
+{
+    "name": "@ilawy/dpng",
+    "version": "0.7.5",
+    "exports": "./mod.ts"
+}
