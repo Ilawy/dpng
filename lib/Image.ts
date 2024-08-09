@@ -63,7 +63,7 @@ function write2lsb(buffer: Uint8Array, offset: number, value: number): number {
 function writeString(
   buffer: Uint8Array,
   offset: number,
-  string: string,
+  string: string
 ): number {
   for (let i = 0, n = string.length; i < n; i++) {
     buffer[offset++] = string.charCodeAt(i);
@@ -80,10 +80,10 @@ interface Coordinate {
   y: number;
 }
 /*
-*
-* Helper interface to create valid RGB colors
-*
-* */
+ *
+ * Helper interface to create valid RGB colors
+ *
+ * */
 export interface RGB {
   r: number;
   g: number;
@@ -92,14 +92,14 @@ export interface RGB {
 }
 
 /*
-*
-* Creating a basic image, without extension type
-*
-* To create a PNG image, use `PNGImage`
-*
-* See the documentation for other image types
-*
-*/
+ *
+ * Creating a basic image, without extension type
+ *
+ * To create a PNG image, use `PNGImage`
+ *
+ * See the documentation for other image types
+ *
+ */
 export class Image {
   private readonly width: number;
   private height: number;
@@ -126,24 +126,24 @@ export class Image {
   private readonly buffer: Uint8Array;
   private palette: Palette;
   private pindex: number;
-  private backgroundColor: Object;
+  private backgroundColor: number;
 
   /*
-  *
-  * @typeParam  backgroundColor The background color of the desired image. Black by default
-  *
-  * @param width  The width of the desired image
-  * @param height The height of the desired image
-  *
-  * @param depth  The depth of the desired image. 10 by default
-  *
-  * */
+   *
+   * @typeParam  backgroundColor The background color of the desired image. Black by default
+   *
+   * @param width  The width of the desired image
+   * @param height The height of the desired image
+   *
+   * @param depth  The depth of the desired image. 10 by default
+   *
+   * */
   constructor(
     width: number,
     height: number,
     depth: number = 10,
     backgroundColor: RGB = { r: 0, g: 0, b: 0, a: 0 },
-    HEADER: string,
+    HEADER: string
   ) {
     this.width = width;
     this.height = height;
@@ -153,8 +153,8 @@ export class Image {
     this.pix_format = 3;
     this.pix_size = height * (width + 1);
 
-    this.data_size = 2 + this.pix_size +
-      5 * Math.floor((0xfffe + this.pix_size) / 0xffff) + 4;
+    this.data_size =
+      2 + this.pix_size + 5 * Math.floor((0xfffe + this.pix_size) / 0xffff) + 4;
 
     this.ihdr_offs = 0;
     this.ihdr_size = 4 + 4 + 13 + 4;
@@ -219,10 +219,10 @@ export class Image {
   }
 
   /*
-  *
-  * Deflate before converting
-  *
-  * */
+   *
+   * Deflate before converting
+   *
+   * */
   deflate(): void {
     const { width, height, buffer } = this,
       BASE = 65521,
@@ -237,7 +237,7 @@ export class Image {
     for (let y = 0; y < height; y++) {
       for (let x = -1; x < width; x++) {
         const i = y * (width + 1) + x + 1;
-        s1 += buffer[baseOffset * Math.floor((i / 0xffff) + 1) + i];
+        s1 += buffer[baseOffset * Math.floor(i / 0xffff + 1) + i];
         s2 += s1;
 
         if ((n -= 1) != 0) {
@@ -262,37 +262,37 @@ export class Image {
   }
 
   /*
-  *
-  * Drawing on the image canvas
-  *
-  * @param x  x coordinate of the pixel
-  * @param y  y coordinate of the pixel
-  * @param color  The color of the pixel, you can generate one with createRGBColor
-  *
-  * */
+   *
+   * Drawing on the image canvas
+   *
+   * @param x  x coordinate of the pixel
+   * @param y  y coordinate of the pixel
+   * @param color  The color of the pixel, you can generate one with createRGBColor
+   *
+   * */
   setPixel(x: number, y: number, color: number): void {
     const i = y * (this.width + 1) + x + 1;
-    this.buffer[this.idat_offs + 8 + 2 + 5 * Math.floor((i / 0xffff) + 1) + i] =
+    this.buffer[this.idat_offs + 8 + 2 + 5 * Math.floor(i / 0xffff + 1) + i] =
       color;
   }
 
   /*
-  *
-  * Drawing a line
-  *
-  * @param x  x coordinate of the line
-  * @param y  y coordinate of the line
-  * @param width  the width of the line
-  * @param height the height of the line
-  * @param color  the color of the line
-  *
-  * */
+   *
+   * Drawing a line
+   *
+   * @param x  x coordinate of the line
+   * @param y  y coordinate of the line
+   * @param width  the width of the line
+   * @param height the height of the line
+   * @param color  the color of the line
+   *
+   * */
   drawLine(
     x: number,
     y: number,
     width: number,
     height: number,
-    color: number,
+    color: number
   ): void {
     for (let i = 0; i < width; i++) {
       for (let j = 0; j < height; j++) {
@@ -302,22 +302,22 @@ export class Image {
   }
 
   /*
-  *
-  * Drawing a rectangle
-  *
-  * @param x1 start x coordinate of the rect
-  * @param y1 start y coordinate of the rect
-  * @param x2 end x coordinate of the rect
-  * @param y2 end y coordinate of the rect
-  * @param color  the color of the rect
-  *
-  * */
+   *
+   * Drawing a rectangle
+   *
+   * @param x1 start x coordinate of the rect
+   * @param y1 start y coordinate of the rect
+   * @param x2 end x coordinate of the rect
+   * @param y2 end y coordinate of the rect
+   * @param color  the color of the rect
+   *
+   * */
   drawRect(
     x1: number,
     y1: number,
     x2: number,
     y2: number,
-    color: number,
+    color: number
   ): void {
     if (x1 > x2 || y1 > y2) {
       throw new Error("x2 or y2 can't be greater than x1 or y1");
@@ -327,18 +327,18 @@ export class Image {
   }
 
   /*
-  *
-  * Drawing a bordered rectangle
-  *
-  * @param x1 start x coordinate of the rect
-  * @param y1 start y coordinate of the rect
-  * @param x2 end x coordinate of the rect
-  * @param y2 end y coordinate of the rect
-  * @param borderSize how thick should the border be
-  * @param insideColor the color inside the rectangle border
-  * @param outsideColor the color of the border
-  *
-  * */
+   *
+   * Drawing a bordered rectangle
+   *
+   * @param x1 start x coordinate of the rect
+   * @param y1 start y coordinate of the rect
+   * @param x2 end x coordinate of the rect
+   * @param y2 end y coordinate of the rect
+   * @param borderSize how thick should the border be
+   * @param insideColor the color inside the rectangle border
+   * @param outsideColor the color of the border
+   *
+   * */
   drawBorderedRect(
     x1: number,
     y1: number,
@@ -346,7 +346,7 @@ export class Image {
     y2: number,
     borderSize: number,
     insideColor: number,
-    outsideColor: number,
+    outsideColor: number
   ): void {
     if (x1 > x2 || y1 > y2) {
       throw new Error("x2 or y2 can't be greater than x1 or y1");
@@ -361,31 +361,31 @@ export class Image {
       y1 + borderSize,
       x2 - borderSize,
       y2 - borderSize,
-      insideColor,
+      insideColor
     );
   }
 
   /*
-  *
-  * Getting the required parameters for a circle drawing
-  *
-  * @param x_center  The x coordinate of the center of the circle
-  * @param y_center  The y coordinate of the center of the circle
-  * @param r  The radius of the circle
-  *
-  * @return outlinePixels The pixels on the edge of the circle
-  *
-  * */
+   *
+   * Getting the required parameters for a circle drawing
+   *
+   * @param x_center  The x coordinate of the center of the circle
+   * @param y_center  The y coordinate of the center of the circle
+   * @param r  The radius of the circle
+   *
+   * @return outlinePixels The pixels on the edge of the circle
+   *
+   * */
   getCirclePoints(
     x_center: number,
     y_center: number,
-    r: number,
+    r: number
   ): Array<Array<Coordinate>> {
     let x = r,
       y = 0,
       P = 1 - r;
 
-    let outlinePixels = [];
+    const outlinePixels = [];
 
     while (x >= y) {
       outlinePixels.push(
@@ -404,7 +404,7 @@ export class Image {
         [
           { x: -y + x_center, y: x + y_center },
           { x: -y + x_center, y: -x + y_center },
-        ],
+        ]
       );
 
       y++;
@@ -421,20 +421,20 @@ export class Image {
   }
 
   /*
-  *
-  * Drawing a filled circle
-  *
-  * @param x_center  The x coordinate of the center of the circle
-  * @param y_center  The y coordinate of the center of the circle
-  * @param r  The radius of the circle
-  * @param color  The color of the circle
-  *
-  * */
+   *
+   * Drawing a filled circle
+   *
+   * @param x_center  The x coordinate of the center of the circle
+   * @param y_center  The y coordinate of the center of the circle
+   * @param r  The radius of the circle
+   * @param color  The color of the circle
+   *
+   * */
   drawFilledCircle(
     x_center: number,
     y_center: number,
     r: number,
-    color: number,
+    color: number
   ): void {
     const outlinePixels = this.getCirclePoints(x_center, y_center, r);
 
@@ -446,28 +446,28 @@ export class Image {
   }
 
   /*
-  *
-  * THIS FEATURE IS NOT YET WORKING
-  *
-  * TODO: FIX THIS
-  *
-  * Drawing an outlined circle
-  *
-  * @param x_center  The x coordinate of the center of the circle
-  * @param y_center  The y coordinate of the center of the circle
-  * @param r  The radius of the circle (with the border size)
-  * @param borderSize how thick border / outline should be
-  * @param insideColor the color inside the circle border
-  * @param outsideColor the color of the border
-  *
-  * */
+   *
+   * THIS FEATURE IS NOT YET WORKING
+   *
+   * TODO: FIX THIS
+   *
+   * Drawing an outlined circle
+   *
+   * @param x_center  The x coordinate of the center of the circle
+   * @param y_center  The y coordinate of the center of the circle
+   * @param r  The radius of the circle (with the border size)
+   * @param borderSize how thick border / outline should be
+   * @param insideColor the color inside the circle border
+   * @param outsideColor the color of the border
+   *
+   * */
   drawBorderedCircle(
     x_center: number,
     y_center: number,
     r: number,
     borderSize: number,
     insideColor: number,
-    outsideColor: number,
+    outsideColor: number
   ): void {
     const outlinePixels = this.getCirclePoints(x_center, y_center, r),
       innerPixels = this.getCirclePoints(x_center, y_center, r - borderSize);
@@ -487,22 +487,24 @@ export class Image {
   }
 
   /*
-  *
-  * @internal
-  * Create color from rgba value
-  *
-  * @param red  Red color amount (0-255)
-  * @param green  Green color amount (0-255)
-  * @param blue  Blue color amount (0-255)
-  * @param alpha  Opacity of the color
-  *
-  * @return Color from palette
-  *
-  * */
+   *
+   * @internal
+   * Create color from rgba value
+   *
+   * @param red  Red color amount (0-255)
+   * @param green  Green color amount (0-255)
+   * @param blue  Blue color amount (0-255)
+   * @param alpha  Opacity of the color
+   *
+   * @return Color from palette
+   *
+   * */
   color(red: number, green: number, blue: number, alpha: number): number {
     alpha = alpha >= 0 ? alpha : 255;
-    const color: any = ((((((alpha << 8) | red) << 8) | green) << 8) | blue)
-      .toString();
+    const color: any = (
+      (((((alpha << 8) | red) << 8) | green) << 8) |
+      blue
+    ).toString();
 
     if (this.palette[color] === undefined) {
       if (this.pindex == this.depth) {
@@ -523,52 +525,52 @@ export class Image {
   }
 
   /*
-  *
-  * Get the index of a pixel
-  *
-  * @param x  x coordinate of the pixel
-  * @param y  y coordinate of the pixel
-  *
-  * @return index of the pixel
-  *
-  * */
+   *
+   * Get the index of a pixel
+   *
+   * @param x  x coordinate of the pixel
+   * @param y  y coordinate of the pixel
+   *
+   * @return index of the pixel
+   *
+   * */
   index(x: number, y: number): number {
     const i = y * (this.width + 1) + x + 1;
-    return this.idat_offs + 8 + 2 + 5 * Math.floor((i / 0xffff) + 1) + i;
+    return this.idat_offs + 8 + 2 + 5 * Math.floor(i / 0xffff + 1) + i;
   }
 
   /*
-  *
-  * Get the image buffer
-  *
-  * @return image buffer
-  *
-  * */
+   *
+   * Get the image buffer
+   *
+   * @return image buffer
+   *
+   * */
   getBuffer(): Uint8Array {
     this.deflate();
     return new Uint8Array(this.buffer.buffer);
   }
 
   /*
-  *
-  * Get the base64 encoded image string
-  *
-  * @return base64 string of the image
-  *
-  * */
+   *
+   * Get the base64 encoded image string
+   *
+   * @return base64 string of the image
+   *
+   * */
   getBase64(): string {
     this.deflate();
     return fromUint8Array(new Uint8Array(this.buffer.buffer));
   }
 
   /*
-  *
-  * Get the base64 encoded image converted to HTML data url.
-  * This can be used in img tags' src attribute
-  *
-  * @return base64 encoded source
-  *
-  * */
+   *
+   * Get the base64 encoded image converted to HTML data url.
+   * This can be used in img tags' src attribute
+   *
+   * @return base64 encoded source
+   *
+   * */
   getDataURL(): string {
     return "data:image/png;base64," + this.getBase64();
   }
@@ -576,31 +578,32 @@ export class Image {
   //TODO: convert CSS style colors to rgb
 
   /*
-  *
-  * Create an rgb color
-  *
-  * @typeParam color  RGB type color
-  *
-  * @return color to use with setPixel
-  *
-  * */
+   *
+   * Create an rgb color
+   *
+   * @typeParam color  RGB type color
+   *
+   * @return color to use with setPixel
+   *
+   * */
   createRGBColor(color: RGB): number {
     return this.color(color.r, color.g, color.b, Math.round(color.a * 255));
   }
 
   /*
-  *
-  * Get the color of a pixel
-  *
-  * @param x  x coordinate of the pixel
-  * @param y  y coordinate of the pixel
-  *
-  * @return the internal color of the pixel
-  *
-  * */
+   *
+   * Get the color of a pixel
+   *
+   * @param x  x coordinate of the pixel
+   * @param y  y coordinate of the pixel
+   *
+   * @return the internal color of the pixel
+   *
+   * */
   getPixel(x: number, y: number): number {
     const i = y * (this.width + 1) + x + 1;
-    return this
-      .buffer[this.idat_offs + 8 + 2 + 5 * Math.floor((i / 0xffff) + 1) + i];
+    return this.buffer[
+      this.idat_offs + 8 + 2 + 5 * Math.floor(i / 0xffff + 1) + i
+    ];
   }
 }

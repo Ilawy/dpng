@@ -1,6 +1,6 @@
 import { PNGImage } from "./mod.ts";
 
-Deno.test("test 1", (t) => {
+Deno.test("test 1", () => {
   const png = new PNGImage(128, 128);
   png.drawRect(
     0,

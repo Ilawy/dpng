@@ -141,8 +141,8 @@ function getBase64Code(charCode: number) {
 
 export function bytesToBase64(bytes: Uint8Array) {
   let result = "",
-    i,
-    l = bytes.length;
+    i;
+  const l = bytes.length;
   for (i = 2; i < l; i += 3) {
     result += base64abc[bytes[i - 2] >> 2];
     result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
